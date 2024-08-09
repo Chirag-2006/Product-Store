@@ -19,8 +19,9 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  Center,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useProductStore } from "../store/product";
 
 const ProductCard = ({ product }) => {
@@ -31,7 +32,17 @@ const ProductCard = ({ product }) => {
   const { deleteProduct, updateProduct } = useProductStore();
   const toast = useToast();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isUpdateOpen,
+    onOpen: onUpdateOpen,
+    onClose: onUpdateClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isImageOpen,
+    onOpen: onImageOpen,
+    onClose: onImageClose,
+  } = useDisclosure();
 
   const handleUpdateProduct = async () => {
     const response = await updateProduct(product._id, updatedProduct);
@@ -44,7 +55,7 @@ const ProductCard = ({ product }) => {
         duration: 3000,
         isClosable: true,
       });
-      onClose();
+      onUpdateClose();
     } else {
       toast({
         title: "Error",
@@ -78,6 +89,10 @@ const ProductCard = ({ product }) => {
     }
   };
 
+  useEffect(() => {
+    setUpdatedProduct(product);
+  }, [product]);
+
   return (
     <Box
       maxW={{ base: "100%", md: "500px" }} // Responsive width
@@ -89,13 +104,16 @@ const ProductCard = ({ product }) => {
       _hover={{ transform: "scale(1.05)" }}
       bg={bg}
     >
-      <Image
-        src={product.image}
-        alt={product.name}
-        w="100%"
-        h={{ base: "200px", md: "200px" }} // Responsive height
-        objectFit="cover"
-      />
+      {/* Image Box */}
+      <Box onClick={onImageOpen} cursor="pointer">
+        <Image
+          src={product.image}
+          alt={product.name}
+          w="100%"
+          h={{ base: "200px", md: "200px" }} // Responsive height
+          objectFit="cover"
+        />
+      </Box>
 
       <Stack p="3" spacing="2">
         <Text
@@ -113,7 +131,11 @@ const ProductCard = ({ product }) => {
         </Text>
 
         <HStack spacing={2}>
-          <IconButton icon={<EditIcon />} onClick={onOpen} colorScheme="blue" />
+          <IconButton
+            icon={<EditIcon />}
+            onClick={onUpdateOpen}
+            colorScheme="blue"
+          />
           <IconButton
             icon={<DeleteIcon />}
             onClick={() => handleDeleteProduct(product._id)}
@@ -122,10 +144,12 @@ const ProductCard = ({ product }) => {
         </HStack>
       </Stack>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* Update Product Modal */}
+      <Modal isOpen={isUpdateOpen} onClose={onUpdateClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Update Product</ModalHeader> <ModalCloseButton />
+          <ModalHeader>Update Product</ModalHeader>
+          <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
               <Input
@@ -164,14 +188,45 @@ const ProductCard = ({ product }) => {
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={() => handleUpdateProduct(product._id, updatedProduct )}
+              onClick={() => handleUpdateProduct(product._id, updatedProduct)}
             >
               Update
             </Button>
-            <Button onClick={onClose} variant="ghost">
+            <Button onClick={onUpdateClose} variant="ghost">
               Cancel
             </Button>
           </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Image Modal */}
+      <Modal isOpen={isImageOpen} onClose={onImageClose}>
+        <ModalOverlay />
+        <ModalContent backgroundColor="transparent" boxShadow="none">
+          <Center minH={{ base: "40vh", md: "80vh" }}>
+            <Box
+              onClick={(e) => e.stopPropagation()}
+              p={2}
+              bgGradient={"linear(to-r, cyan.400,pink.400)"}
+              borderRadius="md"
+            >
+              {/* Image */}
+              <Image
+                src={product.image}
+                alt={product.name}
+                minH="100%"
+                minW="100%"
+                objectFit="contain"
+                borderRadius="md"
+              />
+
+              {/* Close Button */}
+              <Button mt={4} colorScheme="blue" w="full" onClick={onImageClose}>
+                Close
+              </Button>
+            </Box>
+          </Center>
+          {/* <ModalCloseButton color="white" /> */}
         </ModalContent>
       </Modal>
     </Box>

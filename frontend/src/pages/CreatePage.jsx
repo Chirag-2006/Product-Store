@@ -2,21 +2,9 @@ import {
   Box,
   Button,
   Container,
-  FormControl,
-  FormLabel,
   Heading,
-  Image,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
   useColorModeValue,
-  useDisclosure,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -59,11 +47,17 @@ const CreatePage = () => {
     }
   };
 
-
   return (
     <Container maxW={"container.sm"}>
       <VStack spacing={8}>
-        <Heading textAlign={"center"} as={"h1"} size={"2xl"} mb={8}>
+        <Heading
+          textAlign={"center"}
+          as={"h1"}
+          size={"2xl"}
+          mb={8}
+          bgClip={"text"}
+          bgGradient={"linear(to-r, cyan.400,pink.400)"}
+        >
           Create New Product
         </Heading>
         <Box
@@ -104,8 +98,6 @@ const CreatePage = () => {
             </Button>
           </VStack>
         </Box>
-
-        
       </VStack>
     </Container>
   );
